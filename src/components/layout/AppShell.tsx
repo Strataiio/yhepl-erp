@@ -1,5 +1,4 @@
 'use client'
-
 import { useRouter } from 'next/navigation'
 import Sidebar from './Sidebar'
 import { getNavItems } from '@/lib/roles'
@@ -25,14 +24,9 @@ export default function AppShell({ children, userRole, userName }: AppShellProps
   const navItems = getNavItems(userRole)
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <Sidebar
-        navItems={navItems}
-        userRole={userRole}
-        userName={userName}
-        onSignOut={handleSignOut}
-      />
-      <main className="flex-1 overflow-auto">
+    <div style={{ display: 'flex', minHeight: '100vh', background: '#f1f5f9' }}>
+      <Sidebar navItems={navItems} userRole={userRole} userName={userName} onSignOut={handleSignOut} />
+      <main style={{ flex: 1, overflowY: 'auto', minHeight: '100vh' }}>
         {children}
       </main>
     </div>

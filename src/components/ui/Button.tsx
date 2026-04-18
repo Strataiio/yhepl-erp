@@ -1,46 +1,27 @@
-import { cn } from '@/lib/utils'
-
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'danger' | 'ghost'
   size?: 'sm' | 'md' | 'lg'
   loading?: boolean
 }
-
-const VARIANTS = {
-  primary:   'bg-teal-600 text-white hover:bg-teal-700 disabled:bg-teal-400',
-  secondary: 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50',
-  danger:    'bg-red-600 text-white hover:bg-red-700',
-  ghost:     'text-gray-600 hover:bg-gray-100',
+const STYLES = {
+  primary:   { background: '#1e40af', color: '#fff', border: 'none' },
+  secondary: { background: '#fff', color: '#374151', border: '1px solid #e5e7eb' },
+  danger:    { background: '#dc2626', color: '#fff', border: 'none' },
+  ghost:     { background: 'transparent', color: '#374151', border: 'none' },
 }
-
 const SIZES = {
-  sm: 'px-3 py-1.5 text-xs rounded-lg',
-  md: 'px-4 py-2 text-sm rounded-lg',
-  lg: 'px-5 py-2.5 text-sm rounded-xl',
+  sm: { padding: '5px 12px', fontSize: '12px', borderRadius: '6px' },
+  md: { padding: '8px 16px', fontSize: '13px', borderRadius: '8px' },
+  lg: { padding: '11px 22px', fontSize: '14px', borderRadius: '8px' },
 }
-
-export function Button({
-  children, variant = 'secondary', size = 'md',
-  loading, className, disabled, ...props
-}: ButtonProps) {
+export function Button({ children, variant = 'secondary', size = 'md', loading, disabled, style, ...props }: ButtonProps) {
   return (
     <button
-      className={cn(
-        'inline-flex items-center justify-center gap-2 font-medium transition-colors',
-        'disabled:opacity-50 disabled:cursor-not-allowed',
-        VARIANTS[variant],
-        SIZES[size],
-        className
-      )}
+      style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontWeight: '600', cursor: disabled || loading ? 'not-allowed' : 'pointer', opacity: disabled || loading ? 0.6 : 1, transition: 'opacity 0.15s', ...STYLES[variant], ...SIZES[size], ...style }}
       disabled={disabled || loading}
       {...props}
     >
-      {loading && (
-        <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
-          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-        </svg>
-      )}
+      {loading && <span style={{ fontSize: '12px' }}>⟳</span>}
       {children}
     </button>
   )

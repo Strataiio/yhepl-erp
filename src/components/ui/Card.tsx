@@ -1,46 +1,29 @@
-import { cn } from '@/lib/utils'
-
 interface CardProps {
   children: React.ReactNode
   className?: string
   padding?: 'none' | 'sm' | 'md' | 'lg'
 }
 
-const PADDING = {
-  none: '',
-  sm: 'p-4',
-  md: 'p-5',
-  lg: 'p-6',
-}
+const PADDING = { none: '0', sm: '16px', md: '20px', lg: '24px' }
 
-export function Card({ children, className, padding = 'md' }: CardProps) {
+export function Card({ children, padding = 'md' }: CardProps) {
   return (
-    <div className={cn(
-      'bg-white rounded-xl border border-gray-200',
-      PADDING[padding],
-      className
-    )}>
+    <div style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e5e7eb', padding: PADDING[padding] }}>
       {children}
     </div>
   )
 }
 
-export function CardHeader({ children, className }: { children: React.ReactNode; className?: string }) {
-  return (
-    <div className={cn('flex items-center justify-between mb-4', className)}>
-      {children}
-    </div>
-  )
+export function CardHeader({ children }: { children: React.ReactNode }) {
+  return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>{children}</div>
 }
 
-export function StatCard({
-  label, value, sub, color = 'gray'
-}: { label: string; value: string | number; sub?: string; color?: string }) {
+export function StatCard({ label, value, sub }: { label: string; value: string | number; sub?: string }) {
   return (
-    <div className="bg-gray-50 rounded-xl p-4">
-      <p className="text-xs text-gray-500 mb-1">{label}</p>
-      <p className="text-2xl font-semibold text-gray-900">{value}</p>
-      {sub && <p className="text-xs text-gray-400 mt-0.5">{sub}</p>}
+    <div style={{ background: '#f8fafc', borderRadius: '10px', padding: '16px' }}>
+      <p style={{ fontSize: '12px', color: '#64748b', margin: '0 0 4px', fontWeight: '500' }}>{label}</p>
+      <p style={{ fontSize: '26px', fontWeight: '700', color: '#0f172a', margin: 0 }}>{value}</p>
+      {sub && <p style={{ fontSize: '11px', color: '#94a3b8', margin: '2px 0 0' }}>{sub}</p>}
     </div>
   )
 }

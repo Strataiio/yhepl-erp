@@ -1,27 +1,19 @@
-import { cn } from '@/lib/utils'
-
 interface BadgeProps {
   children: React.ReactNode
-  className?: string
   variant?: 'default' | 'success' | 'warning' | 'danger' | 'info' | 'neutral'
 }
-
-const VARIANTS = {
-  default: 'bg-gray-100 text-gray-700',
-  success: 'bg-green-100 text-green-800',
-  warning: 'bg-amber-100 text-amber-800',
-  danger:  'bg-red-100 text-red-800',
-  info:    'bg-blue-100 text-blue-800',
-  neutral: 'bg-gray-50 text-gray-500 border border-gray-200',
+const COLORS = {
+  default: { bg: '#f1f5f9', color: '#475569' },
+  success: { bg: '#f0fdf4', color: '#065f46' },
+  warning: { bg: '#fefce8', color: '#854d0e' },
+  danger:  { bg: '#fef2f2', color: '#991b1b' },
+  info:    { bg: '#eff6ff', color: '#1e40af' },
+  neutral: { bg: '#f9fafb', color: '#6b7280' },
 }
-
-export function Badge({ children, className, variant = 'default' }: BadgeProps) {
+export function Badge({ children, variant = 'default' }: BadgeProps) {
+  const c = COLORS[variant]
   return (
-    <span className={cn(
-      'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium',
-      VARIANTS[variant],
-      className
-    )}>
+    <span style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: '600', background: c.bg, color: c.color }}>
       {children}
     </span>
   )
