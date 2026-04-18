@@ -9,7 +9,7 @@ const ALLOWED_TABLES = [
   'product_types','material_grades','machines','customers','vendors',
   'uom_master','cost_rates','qc_checkpoints','process_parameter_schemas',
   'departments','designations','shifts','stock_locations','scrap_categories',
-  'document_types','wps_library','purchase_items','itp_templates','labour_agencies',
+  'document_types','wps_library','purchase_items','itp_templates','labour_agencies', 'employees',
   // Projects
   'projects','assemblies','project_bom','project_budgets',
   // Production
