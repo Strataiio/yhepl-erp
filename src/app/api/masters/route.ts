@@ -9,7 +9,7 @@ const ALLOWED_TABLES = [
   'product_types','material_grades','machines','customers','vendors',
   'uom_master','cost_rates','qc_checkpoints','process_parameter_schemas',
   'departments','designations','shifts','stock_locations','scrap_categories',
-  'document_types','wps_library','purchase_items','itp_templates','labour_agencies', 'employees', 'wage_structures',
+  'document_types','wps_library','purchase_items','itp_templates','labour_agencies', 'employees', 'wage_structures', 'finished_goods', 'joint_register',
   // Projects
   'projects','assemblies','project_bom','project_budgets',
   // Production
@@ -19,7 +19,7 @@ const ALLOWED_TABLES = [
   'plates','remnants','inventory','material_issues','grn','grn_items',
   'purchase_orders','po_items','rfq','vendor_quotations',
   // HR
-  'employees', 'wage_structures','attendance','leave_applications','payroll_runs','payroll_line_items',
+  'employees', 'wage_structures', 'finished_goods', 'joint_register','attendance','leave_applications','payroll_runs','payroll_line_items',
   // Weld
   'joint_register','weld_logs','ndt_results',
   // User

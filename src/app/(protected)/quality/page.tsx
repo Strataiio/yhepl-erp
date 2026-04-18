@@ -24,6 +24,7 @@ export default function QualityPage() {
   const MODULES = [
     { href: '/quality/qc-entry', label: 'QC entry', desc: 'Inspect buckets — parameter-level pass/fail against spec. Auto-creates NCR on failure.', color: '#1e40af' },
     { href: '/quality/ncr', label: 'NCR & CAPA', desc: 'Non-conformance reports, corrective actions, CAPA closure tracking', color: '#dc2626' },
+    { href: '/quality/weld', label: 'Weld management', desc: 'WPS library, joint register, welder qualification, NDT results per joint', color: '#b45309' },
     { href: '/quality/dossier', label: 'Document dossier', desc: 'Per-project QC handover package completeness tracker', color: '#065f46' },
   ]
 
