@@ -18,10 +18,10 @@ type KanbanCol = { process: any; waiting: Bucket[]; wip: Bucket[]; qc_pending: B
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const STATUS_CFG: Record<string, { label: string; bg: string; border: string; text: string; dot: string }> = {
-  waiting:    { label: 'Waiting',     bg: '#fffbeb', border: '#fde68a', text: '#92400e', dot: '#f59e0b' },
-  wip:        { label: 'WIP',         bg: '#eff6ff', border: '#bfdbfe', text: '#1e40af', dot: '#3b82f6' },
+  waiting:    { label: '⏳ Waiting',     bg: '#fffbeb', border: '#fde68a', text: '#92400e', dot: '#f59e0b' },
+  wip:        { label: '▶ WIP',         bg: '#eff6ff', border: '#bfdbfe', text: '#1e40af', dot: '#3b82f6' },
   qc_pending: { label: 'QC Pending',  bg: '#faf5ff', border: '#ddd6fe', text: '#5b21b6', dot: '#8b5cf6' },
-  qc_passed:  { label: 'QC Passed',   bg: '#f0fdf4', border: '#bbf7d0', text: '#065f46', dot: '#10b981' },
+  qc_passed:  { label: '✓ Finished',   bg: '#f0fdf4', border: '#bbf7d0', text: '#065f46', dot: '#10b981' },
   qc_failed:  { label: 'QC Failed',   bg: '#fef2f2', border: '#fecaca', text: '#991b1b', dot: '#ef4444' },
   rework:     { label: 'Rework',      bg: '#fff7ed', border: '#fed7aa', text: '#9a3412', dot: '#f97316' },
   planned:    { label: 'Planned',     bg: '#f8fafc', border: '#e2e8f0', text: '#475569', dot: '#94a3b8' },
@@ -84,6 +84,8 @@ function BucketPanel({ bucketId, onClose, onUpdated }: { bucketId: string; onClo
   const [closeForm, setCloseForm] = useState({ actual_output_qty: '', remarks: '' })
   const [activeMachineLogId, setActiveMachineLogId] = useState<string | null>(null)
   const [activeLabourLogId, setActiveLabourLogId] = useState<string | null>(null)
+  const [splitting, setSplitting] = useState(false)
+  const [splitForm, setSplitForm] = useState({ pass_qty: '', fail_qty: '', split_reason: 'qc_split' })
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -179,6 +181,24 @@ function BucketPanel({ bucketId, onClose, onUpdated }: { bucketId: string; onClo
       await load()
     } catch (e) { setError(String(e)) }
     setSaving(false)
+  }
+
+  async function splitBucket() {
+    if (!splitForm.pass_qty && !splitForm.fail_qty) { setError('Enter pass qty or fail qty'); return }
+    setSplitting(true); setError('')
+    try {
+      const r = await fetch(`/api/production/buckets/${bucketId}/split`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          pass_qty: parseFloat(splitForm.pass_qty) || 0,
+          fail_qty: parseFloat(splitForm.fail_qty) || 0,
+          split_reason: splitForm.split_reason,
+        })
+      })
+      if (!r.ok) throw new Error(await r.text())
+      onClose(); onUpdated()
+    } catch (e) { setError(String(e)) }
+    setSplitting(false)
   }
 
   async function sendToQC() {
@@ -400,6 +420,20 @@ function BucketPanel({ bucketId, onClose, onUpdated }: { bucketId: string; onClo
                 <label style={lbl}>Remarks / notes</label>
                 <textarea style={{ ...inp(), height: '80px', resize: 'vertical' as const }} placeholder="Any issues, deviations, or notes..." value={closeForm.remarks} onChange={e => setCloseForm(f => ({ ...f, remarks: e.target.value }))} />
               </div>
+              {/* Split bucket */}
+              <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: '16px', marginBottom: '16px' }}>
+                <div style={{ fontSize: '12px', fontWeight: '700', color: '#374151', marginBottom: '10px' }}>Or — split into pass/fail children</div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '10px' }}>
+                  <div><label style={lbl}>Pass qty</label><input style={inp({ borderColor: '#86efac', background: '#f0fdf4' })} type="number" placeholder={String(bucket.input_qty)} value={splitForm.pass_qty} onChange={e => setSplitForm(f => ({ ...f, pass_qty: e.target.value, fail_qty: String(Math.max(0, (bucket.input_qty || 0) - parseFloat(e.target.value || '0'))) }))} /></div>
+                  <div><label style={lbl}>Fail qty</label><input style={inp({ borderColor: '#fca5a5', background: '#fef2f2' })} type="number" value={splitForm.fail_qty} onChange={e => setSplitForm(f => ({ ...f, fail_qty: e.target.value }))} /></div>
+                </div>
+                <button onClick={splitBucket} disabled={splitting}
+                  style={{ width: '100%', padding: '10px', background: '#92400e', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: '700', cursor: 'pointer', marginBottom: '12px' }}>
+                  {splitting ? 'Splitting...' : '⑂ Split bucket (creates child buckets)'}
+                </button>
+                <div style={{ fontSize: '10px', color: '#9ca3af' }}>Creates BKT-X-P (pass → next process) and BKT-X-R (fail → rework). Parent is closed.</div>
+              </div>
+              <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: '16px', marginBottom: '8px', fontSize: '11px', fontWeight: '700', color: '#374151' }}>Or — send entire batch to QC</div>
               <button onClick={sendToQC} disabled={saving || !isWIP} style={{ width: '100%', padding: '12px', background: isWIP ? '#5b21b6' : '#e5e7eb', color: isWIP ? '#fff' : '#9ca3af', border: 'none', borderRadius: '8px', fontSize: '14px', fontWeight: '700', cursor: isWIP ? 'pointer' : 'not-allowed' }}>
                 {saving ? 'Closing...' : isWIP ? '→ Close & send to QC' : 'Bucket must be WIP to close'}
               </button>
