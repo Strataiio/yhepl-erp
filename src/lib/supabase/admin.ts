@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 
-// Server-only admin client — bypasses RLS for master data reads
-// Never expose this on the client side
+// Server-only admin client — bypasses RLS
+// Safe to use in Server Components and API routes
 export function createAdminClient() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

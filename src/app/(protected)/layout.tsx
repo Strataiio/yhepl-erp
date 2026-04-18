@@ -1,26 +1,26 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { adminDB } from '@/lib/api-helpers'
+import { createAdminClient } from '@/lib/supabase/admin'
 import AppShell from '@/components/layout/AppShell'
 
 export default async function ProtectedLayout({ children }: { children: React.ReactNode }) {
-  // 1. Verify session via Supabase auth (uses anon key + cookie — no RLS needed)
+  // Verify session
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  // 2. Fetch profile using admin client (bypasses RLS — service role key, server only)
-  const db = adminDB() as any
-  const { data: profile } = await db
+  // Fetch profile with admin client (bypasses RLS)
+  const admin = createAdminClient() as any
+  const { data: profile } = await admin
     .from('user_profiles')
     .select('full_name, role')
     .eq('id', user.id)
     .single()
 
-  // If no profile yet, create a default one so the user isn't locked out
+  // Auto-create profile if missing
   if (!profile) {
-    await db.from('user_profiles').upsert({
+    await admin.from('user_profiles').upsert({
       id: user.id,
       full_name: user.email?.split('@')[0] || 'User',
       role: 'md',
